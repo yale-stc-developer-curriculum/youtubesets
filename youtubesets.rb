@@ -32,8 +32,13 @@ helpers do
             "ViwtNLUqkMY",
     ].sample
   end
-  def embedyoutube(videonumber)
+  def embedyoutubeiframe(videonumber)
     '<iframe width="100%" height="100%" src="//www.youtube.com/embed/' + videonumber +'&autoplay=1" frameborder="0" allowfullscreen></iframe>'
+  end
+  def embedyoutube(videonumber)
+    '<body style="margin:0;">' + \
+    '<object height="100%" width="100%"><param name="movie" value="http://www.youtube.com/v/' + videonumber + '&autoplay=1" /><embed height="100%" src="http://www.youtube.com/v/' + videonumber + '&autoplay=1" type="application/x-shockwave-flash" width="100%"></embed></object>' + \
+    '</body>'
   end
 end
 
