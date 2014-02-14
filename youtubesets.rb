@@ -37,6 +37,6 @@ helpers do
   end
 end
 
-get '/jt' do
+get '/' do
   embedyoutube(randomvideo())
 end
