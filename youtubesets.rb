@@ -33,7 +33,7 @@ helpers do
     ].sample
   end
   def embedyoutube(videonumber)
-    '<iframe width="100%" height="100%" src="//www.youtube.com/embed/' + videonumber +'" frameborder="0" allowfullscreen></iframe>'
+    '<iframe width="100%" height="100%" src="//www.youtube.com/embed/' + videonumber +'&autoplay=1" frameborder="0" allowfullscreen></iframe>'
   end
 end
 
