@@ -1,39 +1,14 @@
 require 'sinatra'
 require "sinatra/reloader" if development?
 
+
 helpers do
-  def randomvideo()
-    ["QczgvUDskk0",
-            "VBmMU_iwe6U",
-            "Vjw92oUduEM",
-            "4m1EFMoRFvY",
-            "FHp2KgyQUFk",
-            "2EwViQxSJJQ",
-            "xWKdMmH0B-E",
-            "sQgd6MccwZc",
-            "Ob7vObnFUJc",
-            "2XY3AvVgDns",
-            "NiF6-0UTqtc",
-            "QczgvUDskk0",
-            "bnVUHWCynig",
-            "p1JPKLa-Ofc",
-            "CGkvXp0vdng",
-            "eY_mrU8MPfI",
-            "hbnPkK76Ask",
-            "KaasJ44O5lI",
-            "JlxByc0-V40",
-            "3xUfCUFPL-8",
-            "rNM5HW13_O8",
-            "4S37SGxZSMc",
-            "qFJ3VKnwmJw",
-            "Q1dUDzBdnmI",
-            "RioOJ7dZxuw",
-            "IyYnnUcgeMc",
-            "ViwtNLUqkMY",
-    ].sample
+  def randomvideo(set)
+    set.sample
   end
-  def embedyoutubeiframe(videonumber)
-    '<iframe width="100%" height="100%" src="//www.youtube.com/embed/' + videonumber +'&autoplay=1" frameborder="0" allowfullscreen></iframe>'
+  def gathervideos()
+    @beyonce = ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
+    @postmodernjukebox = ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
   end
   def embedyoutube(videonumber)
     '<body style="margin:0;">' + \
@@ -43,5 +18,15 @@ helpers do
 end
 
 get '/' do
-  embedyoutube(randomvideo())
+  "<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
+end
+
+get '/beyonce' do
+  gathervideos()
+  embedyoutube(randomvideo(@beyonce))
+end
+
+get '/postmodernjukebox' do
+  gathervideos()
+  embedyoutube(randomvideo(@postmodernjukebox))
 end
