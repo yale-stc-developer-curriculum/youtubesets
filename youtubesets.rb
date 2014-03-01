@@ -1,13 +1,8 @@
 require "sinatra"
 require "sinatra/reloader" if development?
 
-enable :sessions
-
-    @@beyonce ||= ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
-    @@postmodernjukebox ||= ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
-
 configure do
-  session[:sets] ||= {}
+  enable :sessions
 end
 
 
@@ -27,7 +22,6 @@ end
 get '/' do
   "<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>" + \
     "<a href='set/new'>New Set</a>"
-
 end
 
 
@@ -38,7 +32,7 @@ end
 #end
 
 ##Create a new set (really, just update video list of an old set)
-get '/set/new' do
+get '/sets/new' do
   %{
     <form name="newyoutubeset" action="create" method="post">
       <fieldset>
@@ -58,7 +52,7 @@ end
 
 
 ##CREATE
-post '/set/create' do
+post '/sets/create' do
   setname = params["setname"]
   videoset = params["videoset"]
   session[:sets][setname] = videoset.split("\s")
@@ -66,7 +60,7 @@ post '/set/create' do
   ##print to page for debugging
   text = ""
   session[:sets][setname].each do |videoname|
-    text << "I love " + videoname.to_s + "<br>"
+    text << videoname.to_s + " has been added to the set " + setname + "<br>"
   end
   text
 end
@@ -85,7 +79,7 @@ end
 ##SHOW
 ##Displaying Sets
 
-get '/set/:setname/' do |setname|
+get '/sets/:setname' do |setname|
   if session[:sets][setname]
     text = "Videos<br>"
     session[:sets][setname].each do |v|
@@ -98,7 +92,7 @@ get '/set/:setname/' do |setname|
 end
 
 
-get '/set/:setname/play/' do |setname|
+get '/sets/:setname/play' do |setname|
   session[:sets] ||= {}
   if session[:sets][setname]
     embedyoutube(randomvideo(session[:sets][setname]))
@@ -121,13 +115,22 @@ get '/postmodernjukebox' do
 end
 
 
+##just view blank params
+get '/params' do
+  params.inspect
+end
+
+##try using the ?var1=1&var2=lol type
+
+##try using the Sinatra type
+get '/params/:idlol' do
+  params.inspect
+end
+
 #Session for troubleshooting
 get '/session' do
   session.inspect
 end
 
-get '/params/:idlol' do
-  params.inspect
-end
 
 
