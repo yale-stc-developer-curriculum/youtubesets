@@ -1,14 +1,13 @@
 require 'sinatra'
 require "sinatra/reloader" if development?
 
+    @@beyonce ||= ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
+    @@postmodernjukebox ||= ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
+
 
 helpers do
   def randomvideo(set)
     set.sample
-  end
-  def gathervideos()
-    @beyonce = ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
-    @postmodernjukebox = ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
   end
   def embedyoutube(videonumber)
     '<body style="margin:0;">' + \
@@ -17,16 +16,40 @@ helpers do
   end
 end
 
+
+##Main Welcome Page
 get '/' do
   "<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
 end
 
+
+##Display the Video Sets
 get '/beyonce' do
-  gathervideos()
-  embedyoutube(randomvideo(@beyonce))
+  #@@beyonce.to_s
+  embedyoutube(randomvideo(@@beyonce))
 end
 
 get '/postmodernjukebox' do
-  gathervideos()
-  embedyoutube(randomvideo(@postmodernjukebox))
+  embedyoutube(randomvideo(@@postmodernjukebox))
+end
+
+
+##Create a new set (really, just update video list of an old set
+get '/newset' do
+  %{
+    <form name="newyoutubeset" action="createset" method="post">
+    Set of videos, one link per line: <textarea name="videoset"></textarea>
+    <input type="submit" value="Submit">
+    </form>
+  }
+end
+
+post '/createset' do
+  #params["videoset"].to_s
+  @@beyonce = params["videoset"].split("\s")
+  text = ""
+  @@beyonce.each do |videoname|
+    text << "I love " + videoname.to_s + "<br>"
+  end
+  text
 end
