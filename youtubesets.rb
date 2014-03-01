@@ -40,10 +40,10 @@ get '/set/new' do
       <fieldset>
       <legend>New Set</legend>
       <label for="setname">Set Name</label>
-      <input type="text" name="setname" id="setname">
+      <input type="text" name="setname" id="setname" placeholder="postmodernjukebox">
       <br>
       <label for="videoset">Set of videos, one link per line:</label>
-      <textarea name="videoset" id="videoset"></textarea>
+      <textarea name="videoset" id="videoset" placeholder="VBmCJEehYtU"></textarea>
       <br>
       </fieldset>
       <br>
@@ -122,5 +122,8 @@ get '/session' do
   session.inspect
 end
 
+get '/params/:idlol' do
+  params.inspect
+end
 
 
