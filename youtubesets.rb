@@ -24,6 +24,11 @@ get '/' do
     "<a href='set/new'>New Set</a>"
 end
 
+##Must go to this page once to set up session parameters
+get '/init' do
+  session[:sets] ||= {}
+end
+
 
 ##NEW
 ##Temporary new creation without form
