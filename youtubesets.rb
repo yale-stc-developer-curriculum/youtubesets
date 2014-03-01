@@ -6,6 +6,10 @@ enable :sessions
     @@beyonce ||= ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
     @@postmodernjukebox ||= ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
 
+configure do
+  session[:sets] ||= {}
+end
+
 
 helpers do
   def randomvideo(set)
