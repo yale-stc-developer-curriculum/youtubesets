@@ -1,7 +1,6 @@
 require "sinatra"
 require "sinatra/reloader" if development?
 
-
 configure do
   enable :sessions
 end
@@ -29,12 +28,15 @@ end
 ##INDEX
 ##Main Welcome Page
 get '/' do
-  "<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
+  erb :index
+  #"<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
 end
 
 ##Display the Video Sets
 get '/beyonce' do
-  embedyoutube(randomvideo(beyoncevideos))
+  #embedyoutube(randomvideo(beyoncevideos))
+  @videonumber = randomvideo(beyoncevideos)
+  erb :play
 end
 
 get '/pmj' do
@@ -42,10 +44,46 @@ get '/pmj' do
 end
 
 
+##NEW page
+get '/sets/new' do
+  erb :new
+end
+
+##Create page
+post "/sets" do
+  "Success!"
+end
+
+##make a new video set
+get '/sets/new/:setname/:videonumber' do |setname, videonumber|
+  #setname = "pharrell"
+  #videonumber = "y6Sxv-sUYtM"
+  session[setname] = [videonumber]
+  "Video " + videonumber + "is now the only video in setname " + setname
+end
+
+get '/sets/add/:setname/:videonumber' do |setname, videonumber|
+  session[setname] << videonumber
+  "Video " + videonumber + "has been added to set " + setname
+end
+
+##Play the Pharrell video set
+get '/sets/pharrell' do
+  @videonumber = randomvideo(session["pharrell"])
+  #@videonumber = "y6Sxv-sUYtM"
+  erb :play
+end
+
+
+
+
+
 #Session for troubleshooting
 get '/session' do
+  session[:sessiontestvariable] = 3.14
   session.inspect
 end
+
 
 ##example of parameters
 get '/params/:idlol' do
@@ -54,5 +92,9 @@ end
 
 get '/favorite/:fruit' do |fruit|
   "My favorite fruit is the " + fruit.to_s
+  #params["fruit"] also works instead of fruit
 end
 
+get '/add/:num1/:num2' do |num1, num2|
+
+end
