@@ -1,4 +1,5 @@
 require "sinatra"
+#To get this next line to work, run gem install sinatra-contrib first
 require "sinatra/reloader" if development?
 
 configure do
@@ -10,6 +11,8 @@ helpers do
   def randomvideo(set)
     set.sample
   end
+
+  #We're trying not to use the rest of these helpers any more, but they're here to make the pmj code below still work for comparison
   def embedyoutube(videonumber)
     %{
     <body style="margin:0;">
@@ -32,7 +35,9 @@ get '/' do
   #"<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
 end
 
-##Display the Video Sets
+
+
+##Display the Video Sets, old-style where the videos are hard coded above
 get '/beyonce' do
   #embedyoutube(randomvideo(beyoncevideos))
   @videonumber = randomvideo(beyoncevideos)
@@ -44,6 +49,11 @@ get '/pmj' do
 end
 
 
+
+
+
+##New, RESTful code
+
 ##NEW page
 get '/sets/new' do
   erb :new
@@ -52,9 +62,11 @@ end
 ##Create page
 post "/sets" do
   "Success!"
+  #This should include more
 end
 
-##make a new video set
+
+##not the RESTful new page with the form we want, but a parameters way to make a new video set
 get '/sets/new/:setname/:videonumber' do |setname, videonumber|
   #setname = "pharrell"
   #videonumber = "y6Sxv-sUYtM"
@@ -67,7 +79,8 @@ get '/sets/add/:setname/:videonumber' do |setname, videonumber|
   "Video " + videonumber + "has been added to set " + setname
 end
 
-##Play the Pharrell video set
+
+##Play the Pharrell video set - not necessary eventually, just for testing
 get '/sets/pharrell' do
   @videonumber = randomvideo(session["pharrell"])
   #@videonumber = "y6Sxv-sUYtM"
@@ -78,14 +91,15 @@ end
 
 
 
-#Session for troubleshooting
+#Session page for troubleshooting the session
 get '/session' do
   session[:sessiontestvariable] = 3.14
   session.inspect
 end
 
 
-##example of parameters
+##example of sinatra input by url parameters
+##The ?var=1&var2=2&var3=3 style works too, but Sinatra can give us prettier url parameters
 get '/params/:idlol' do
   params.inspect
 end
@@ -96,5 +110,5 @@ get '/favorite/:fruit' do |fruit|
 end
 
 get '/add/:num1/:num2' do |num1, num2|
-
+  ##your code here, as an example
 end
