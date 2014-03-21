@@ -1,4 +1,5 @@
 require "sinatra"
+#To get this next line to work, run gem install sinatra-contrib first
 require "sinatra/reloader" if development?
 
 configure do
@@ -10,132 +11,100 @@ helpers do
   def randomvideo(set)
     set.sample
   end
+
+  #We're trying not to use the rest of these helpers any more, but they're here to make the pmj code below still work for comparison
   def embedyoutube(videonumber)
-    '<body style="margin:0;">' + \
-    '<object height="100%" width="100%"><param name="movie" value="http://www.youtube.com/v/' + videonumber + '&autoplay=1" /><embed height="100%" src="http://www.youtube.com/v/' + videonumber + '&autoplay=1" type="application/x-shockwave-flash" width="100%"></embed></object>' + \
-    '</body>'
+    %{
+    <body style="margin:0;">
+    <object height="100%" width="100%"><param name="movie" value="http://www.youtube.com/v/#{videonumber}&autoplay=1" /><embed height="100%" src="http://www.youtube.com/v/#{videonumber}&autoplay=1" type="application/x-shockwave-flash" width="100%"></embed></object>
+    </body>
+    }
+  end
+  def beyoncevideos
+    ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
+  end
+  def pmjvideos
+    ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
   end
 end
 
 ##INDEX
 ##Main Welcome Page
 get '/' do
-  "<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>" + \
-    "<a href='set/new'>New Set</a>"
-end
-
-##Must go to this page once to set up session parameters
-get '/init' do
-  session[:sets] ||= {}
-end
-
-
-##NEW
-##Temporary new creation without form
-#get '/new/:setname/:content' do |setname, content|
-  #session[:sets][setname] = content
-#end
-
-##Create a new set (really, just update video list of an old set)
-get '/sets/new' do
-  %{
-    <form name="newyoutubeset" action="create" method="post">
-      <fieldset>
-      <legend>New Set</legend>
-      <label for="setname">Set Name</label>
-      <input type="text" name="setname" id="setname" placeholder="postmodernjukebox">
-      <br>
-      <label for="videoset">Set of videos, one link per line:</label>
-      <textarea name="videoset" id="videoset" placeholder="VBmCJEehYtU"></textarea>
-      <br>
-      </fieldset>
-      <br>
-      <input type="submit" value="Submit">
-    </form>
-  }
-end
-
-
-##CREATE
-post '/sets/create' do
-  setname = params["setname"]
-  videoset = params["videoset"]
-  session[:sets][setname] = videoset.split("\s")
-
-  ##print to page for debugging
-  text = ""
-  session[:sets][setname].each do |videoname|
-    text << videoname.to_s + " has been added to the set " + setname + "<br>"
-  end
-  text
-end
-
-
-##INDEX
-get '/sets' do
-  text = "Sets<br>"
-  session[:sets].keys.each do |setname|
-    text << setname + "<br>"
-  end
-  text
-end
-
-
-##SHOW
-##Displaying Sets
-
-get '/sets/:setname' do |setname|
-  if session[:sets][setname]
-    text = "Videos<br>"
-    session[:sets][setname].each do |v|
-      text << v + "<br>"
-    end
-    text
-  else
-    "There is not a set with the name " + setname
-  end
-end
-
-
-get '/sets/:setname/play' do |setname|
-  session[:sets] ||= {}
-  if session[:sets][setname]
-    embedyoutube(randomvideo(session[:sets][setname]))
-  else
-    "There is not a set with the name " + setname
-  end
+  erb :index
+  #"<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
 end
 
 
 
-##Old Non-Dynamic Code
-##Display the Video Sets
+##Display the Video Sets, old-style where the videos are hard coded above
 get '/beyonce' do
-  #@@beyonce.to_s
-  embedyoutube(randomvideo(@@beyonce))
+  #embedyoutube(randomvideo(beyoncevideos))
+  @videonumber = randomvideo(beyoncevideos)
+  erb :play
 end
 
-get '/postmodernjukebox' do
-  embedyoutube(randomvideo(@@postmodernjukebox))
+get '/pmj' do
+  embedyoutube(randomvideo(pmjvideos))
 end
 
 
-##just view blank params
-get '/params' do
-  params.inspect
+
+##New, RESTful code
+
+##NEW page
+get '/sets/new' do
+  erb :new
 end
 
-##try using the ?var1=1&var2=lol type
-
-##try using the Sinatra type
-get '/params/:idlol' do
-  params.inspect
+##Create page
+post "/sets" do
+  "Success!"
+  #This should include more
 end
 
-#Session for troubleshooting
+
+##not the RESTful new page with the form we want, but a parameters way to make a new video set
+get '/sets/new/:setname/:videonumber' do |setname, videonumber|
+  #setname = "pharrell"
+  #videonumber = "y6Sxv-sUYtM"
+  session[setname] = [videonumber]
+  "Video " + videonumber + "is now the only video in setname " + setname
+end
+
+get '/sets/add/:setname/:videonumber' do |setname, videonumber|
+  session[setname] << videonumber
+  "Video " + videonumber + "has been added to set " + setname
+end
+
+
+##Play the Pharrell video set - not necessary eventually, just for testing
+get '/sets/pharrell' do
+  @videonumber = randomvideo(session["pharrell"])
+  #@videonumber = "y6Sxv-sUYtM"
+  erb :play
+end
+
+
+
+#Session page for troubleshooting the session
 get '/session' do
+  session[:sessiontestvariable] = 3.14
   session.inspect
 end
 
 
+##example of sinatra input by url parameters
+##The ?var=1&var2=2&var3=3 style works too, but Sinatra can give us prettier url parameters
+get '/params/:idlol' do
+  params.inspect
+end
 
+get '/favorite/:fruit' do |fruit|
+  "My favorite fruit is the " + fruit.to_s
+  #params["fruit"] also works instead of fruit
+end
+
+get '/add/:num1/:num2' do |num1, num2|
+  ##your code here, as an example
+end
