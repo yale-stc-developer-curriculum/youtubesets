@@ -1,6 +1,9 @@
 require "sinatra"
 #To get this next line to work, run gem install sinatra-contrib first
 require "sinatra/reloader" if development?
+require "uri"
+require "cgi"
+
 
 configure do
   enable :sessions
