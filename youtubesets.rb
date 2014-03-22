@@ -4,6 +4,8 @@ require "sinatra/reloader" if development?
 
 configure do
   enable :sessions
+  #HTML can pass only get/post methods. This enables us to get delete (see my post on piaza)
+  _method = true
 end
 
 
