@@ -1,8 +1,35 @@
-<h1>Create a New Set</h1>
-<form action="/sets" method="post">
-  <label>Set Name</label>
-  <input type="text" name="setname">
-  <label>List of Videos</label>
-  <textarea name="videolist"></textarea>
-  <input type="submit">
-</form>
+       <!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' type='text/css' href='/forms.css'/>
+    
+     </head>  
+  <body>
+  	
+    <div class="header">
+      <title> Adding sets! </title>
+          <h1> <strong>Welcome to my App!</strong> </h1>
+          <div class="content">
+
+<a href="/sets/new" title="Create a set">Create a new set!</a> 
+<a href="/params" title="Inspect params">Inspect Params</a>
+<a href="/session" title="Inspect session">Inspect session</a>
+<a href="/sets" title="list all the lists">List the lists</a>
+	</div>
+               <h2>Name of set?</h2>
+      </div>
+      <div class = "content">
+        <form action="/sets/new" method ="post">
+  <label for="Set">Name of set</label>
+  <input type="text" name="Set" id="Set">
+        
+      <h2> links?</h2>
+            <form action="/sets/new" method ="post">
+ <textarea name="linkz" placeholder="links?"></textarea>
+ <br>
+             <label for="submit"> Submit it!!!<label>
+      <input id="Submit_Form" type="submit" name="Submit_Form" value="Submit_Form">
+    </div>
+      </body>
+
+      </html>
