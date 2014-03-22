@@ -30,11 +30,8 @@ end
 ##INDEX
 ##Main Welcome Page
 get '/' do
-  erb :index
-  #"<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
+  erb :index 
 end
-
-
 
 ##Display the Video Sets, old-style where the videos are hard coded above
 get '/beyonce' do
