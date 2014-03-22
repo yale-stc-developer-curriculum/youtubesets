@@ -22,12 +22,6 @@ helpers do
     </body>
     }
   end
-  def beyoncevideos
-    ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
-  end
-  def pmjvideos
-    ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
-  end
 end
 
 ##INDEX
