@@ -33,20 +33,12 @@ get '/' do
   erb :index 
 end
 
-##Display the Video Sets, old-style where the videos are hard coded above
-get '/beyonce' do
-  #embedyoutube(randomvideo(beyoncevideos))
-  @videonumber = randomvideo(beyoncevideos)
-  erb :play
-end
-
-get '/pmj' do
-  embedyoutube(randomvideo(pmjvideos))
-end
-
-
-
 ##New, RESTful code
+
+##just view parameters (should be blank) for debugging purposes
+get '/params' do
+  erb :index_with_params
+end
 
 ##NEW page
 get '/sets/new' do
