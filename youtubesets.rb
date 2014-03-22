@@ -40,6 +40,11 @@ get '/params' do
   erb :index_with_params
 end
 
+#Session for troubleshooting
+get '/session' do
+  erb :index_with_session
+end
+
 ##NEW page
 get '/sets/new' do
   erb :new
