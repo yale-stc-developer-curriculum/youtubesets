@@ -50,10 +50,40 @@ get '/sets/new' do
   erb :new
 end
 
-##Create page
-post "/sets" do
-  "Success!"
-  #This should include more
+#This is what really happens after submitting the form
+#also: old habbits die hard: for now, I will define the variables before I initialize them!
+post "/sets/new" do
+  params.inspect
+  arr = params[:Set]
+  
+  links = []
+  key=[]
+
+  #if there are more than one element in the links box, split them and append to links
+   if !params[:linkz].match(/\r\n/).nil?
+    links = params[:linkz].split("\r\n")
+    key = links
+   else 
+  #otherwise just add this one element to links
+    links = [params[:linkz]]
+    key = links
+   end
+    #parsing the links. I don't really know what exactly is happening, but I know why it is happening ;P
+    key = key.map{|x| if x.to_s =~ URI::regexp
+        CGI.parse(URI.parse(x.to_s).query)['v']
+      end}
+      
+      key = key.map{|x| x[0] if !x.nil?}
+      
+    session['list_' + arr] = key
+    session[arr] = links
+    #if in the process we do not get any meaningful links -> there are no "?v" paramaters, enable display error in index and delete the keys from session
+      if session['list_' + arr].nil?
+        @error = 1
+        session.delete('list_'+arr)
+        session.delete(arr)
+      end
+  erb :index
 end
 
 
