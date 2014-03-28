@@ -81,7 +81,7 @@ post "/sets/new" do
 
       session["sets"].store(name.to_s, {"name" => name.to_s, "vidnums" => key, "links" => links})
       @error = 3
-      
+
       if key.include?(nil) or name == ""
         @error = 1
         session["sets"].delete(name)
@@ -90,47 +90,8 @@ post "/sets/new" do
   erb :index
 end
 
-##not the RESTful new page with the form we want, but a parameters way to make a new video set
-get '/sets/new/:setname/:videonumber' do |setname, videonumber|
-  #setname = "pharrell"
-  #videonumber = "y6Sxv-sUYtM"
-  session[setname] = [videonumber]
-  "Video " + videonumber + "is now the only video in setname " + setname
-end
-
-get '/sets/add/:setname/:videonumber' do |setname, videonumber|
-  session[setname] << videonumber
-  "Video " + videonumber + "has been added to set " + setname
-end
-
-
-##Play the Pharrell video set - not necessary eventually, just for testing
-get '/sets/pharrell' do
-  @videonumber = randomvideo(session["pharrell"])
-  #@videonumber = "y6Sxv-sUYtM"
-  erb :play
-end
-
-
-
 #Session page for troubleshooting the session
 get '/session' do
   session[:sessiontestvariable] = 3.14
   session.inspect
-end
-
-
-##example of sinatra input by url parameters
-##The ?var=1&var2=2&var3=3 style works too, but Sinatra can give us prettier url parameters
-get '/params/:idlol' do
-  params.inspect
-end
-
-get '/favorite/:fruit' do |fruit|
-  "My favorite fruit is the " + fruit.to_s
-  #params["fruit"] also works instead of fruit
-end
-
-get '/add/:num1/:num2' do |num1, num2|
-  ##your code here, as an example
 end
