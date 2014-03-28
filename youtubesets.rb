@@ -100,3 +100,9 @@ end
 get '/sets' do
   erb :list
 end
+
+#delete from session the set of name :name. This really just redirects us to a form where we confirm
+get '/sets/:name/destroy' do |name|
+  @name = name
+  erb:destroy
+end
