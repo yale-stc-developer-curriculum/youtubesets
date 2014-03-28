@@ -95,3 +95,8 @@ get '/session' do
   session[:sessiontestvariable] = 3.14
   session.inspect
 end
+
+#display a a list of all the sets possible!
+get '/sets' do
+  erb :list
+end
