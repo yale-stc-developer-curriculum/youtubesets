@@ -106,3 +106,10 @@ get '/sets/:name/destroy' do |name|
   @name = name
   erb:destroy
 end
+
+#actually destroy the set
+delete '/sets/:name' do |name|
+  session["sets"].delete(name.to_s)
+  @error = 4
+  erb:index
+end
