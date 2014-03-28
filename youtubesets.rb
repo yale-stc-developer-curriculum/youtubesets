@@ -153,3 +153,9 @@ put '/sets/:name' do |name|
   erb :index
 end
 
+
+#play a random video from a set with name :name
+get '/sets/:name' do |name|
+  @videonumber = randomvideo(session["sets"][name.to_s]["vidnums"])
+  erb :play
+end
