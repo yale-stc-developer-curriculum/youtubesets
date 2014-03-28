@@ -53,12 +53,16 @@ end
 #This is what really happens after submitting the form
 #also: old habbits die hard: for now, I will define the variables before I initialize them!
 post "/sets/new" do
-  params.inspect
-  arr = params[:Set]
+  @error = 0
+  name = params[:Set].to_s
   
   links = []
   key=[]
 
+  if session["sets"].nil?
+    session["sets"] = Hash.new
+  end
+  
   #if there are more than one element in the links box, split them and append to links
    if !params[:linkz].match(/\r\n/).nil?
     links = params[:linkz].split("\r\n")
@@ -74,15 +78,14 @@ post "/sets/new" do
       end}
       
       key = key.map{|x| x[0] if !x.nil?}
+
+      session["sets"].store(name.to_s, {"name" => name.to_s, "vidnums" => key, "links" => links})
       
-    session['list_' + arr] = key
-    session[arr] = links
-    #if in the process we do not get any meaningful links -> there are no "?v" paramaters, enable display error in index and delete the keys from session
-      if session['list_' + arr].nil?
+      if key.include?(nil) or name == ""
         @error = 1
-        session.delete('list_'+arr)
-        session.delete(arr)
+        session["sets"].delete(name)
       end
+
   erb :index
 end
 
