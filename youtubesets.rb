@@ -119,3 +119,37 @@ get '/sets/:name/edit' do |name|
   @name = name
   erb:edit
 end
+
+#after submitting the form. Really just overwriting the velues under key in session. 
+put '/sets/:name' do |name|
+  
+  links = []
+  key=[]
+  
+  #if there are more than one element in the links box, split them and append to links
+   if !params[:linkz].match(/\r\n/).nil?
+    links = params[:linkz].split("\r\n")
+    key = links
+   else 
+  #otherwise just add this one element to links
+    links = [params[:linkz]]
+    key = links
+   end
+    #parsing the links. I don't really know what exactly is happening, but I know why it is happening ;P
+    key = key.map{|x| if x.to_s =~ URI::regexp
+        CGI.parse(URI.parse(x.to_s).query)['v']
+      end}
+      
+      key = key.map{|x| x[0] if !x.nil?}
+
+      session["sets"].store(name.to_s, {"name" => name.to_s, "vidnums" => key, "links" => links})
+      @error = 5
+
+      if key.include?(nil) or name == ""
+        @error = 1
+        session["sets"].delete(name)
+      end
+
+  erb :index
+end
+
