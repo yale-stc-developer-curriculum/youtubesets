@@ -113,3 +113,9 @@ delete '/sets/:name' do |name|
   @error = 4
   erb:index
 end
+
+#pull up the form with which we actually edit the set
+get '/sets/:name/edit' do |name|
+  @name = name
+  erb:edit
+end
