@@ -80,6 +80,7 @@ post "/sets/new" do
       key = key.map{|x| x[0] if !x.nil?}
 
       session["sets"].store(name.to_s, {"name" => name.to_s, "vidnums" => key, "links" => links})
+      @error = 3
       
       if key.include?(nil) or name == ""
         @error = 1
@@ -88,7 +89,6 @@ post "/sets/new" do
 
   erb :index
 end
-
 
 ##not the RESTful new page with the form we want, but a parameters way to make a new video set
 get '/sets/new/:setname/:videonumber' do |setname, videonumber|

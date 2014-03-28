@@ -22,6 +22,8 @@
    string = '<h2>Your list is invalid! Please try creating it again!</h2>'
   elsif @error == 2
    string = '<h2> The list you specified does not exist! Please try again! </h2>'
+  elsif @error == 3
+   string = '<h2>List has been added!</h2>'
   end%>
   <%=string%>
                      
