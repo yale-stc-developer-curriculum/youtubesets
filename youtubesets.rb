@@ -1,9 +1,14 @@
 require "sinatra"
 #To get this next line to work, run gem install sinatra-contrib first
 require "sinatra/reloader" if development?
+require "uri"
+require "cgi"
+
 
 configure do
   enable :sessions
+  #HTML can pass only get/post methods. This enables us to get delete (see my post on piaza)
+  _method = true
 end
 
 
@@ -20,72 +25,70 @@ helpers do
     </body>
     }
   end
-  def beyoncevideos
-    ["QczgvUDskk0", "VBmMU_iwe6U", "Vjw92oUduEM", "4m1EFMoRFvY", "FHp2KgyQUFk"]
-  end
-  def pmjvideos
-    ["pXYWDtXbBB0", "VBmCJEehYtU", "GZQJrM09jbU"]
-  end
 end
 
 ##INDEX
 ##Main Welcome Page
 get '/' do
-  erb :index
-  #"<h1>Hi!</h1><h2>If you know the url you can play a random video from set of youtube videos!</h2>"
+  erb :index 
 end
-
-
-
-##Display the Video Sets, old-style where the videos are hard coded above
-get '/beyonce' do
-  #embedyoutube(randomvideo(beyoncevideos))
-  @videonumber = randomvideo(beyoncevideos)
-  erb :play
-end
-
-get '/pmj' do
-  embedyoutube(randomvideo(pmjvideos))
-end
-
-
 
 ##New, RESTful code
+
+##just view parameters (should be blank) for debugging purposes
+get '/params' do
+  erb :index_with_params
+end
+
+#Session for troubleshooting
+get '/session' do
+  erb :index_with_session
+end
 
 ##NEW page
 get '/sets/new' do
   erb :new
 end
 
-##Create page
-post "/sets" do
-  "Success!"
-  #This should include more
+#This is what really happens after submitting the form
+#also: old habbits die hard: for now, I will define the variables before I initialize them!
+post "/sets/new" do
+  @error = 0
+  name = params[:Set].to_s
+  
+  links = []
+  key=[]
+
+  if session["sets"].nil?
+    session["sets"] = Hash.new
+  end
+  
+  #if there are more than one element in the links box, split them and append to links
+   if !params[:linkz].match(/\r\n/).nil?
+    links = params[:linkz].split("\r\n")
+    key = links
+   else 
+  #otherwise just add this one element to links
+    links = [params[:linkz]]
+    key = links
+   end
+    #parsing the links. I don't really know what exactly is happening, but I know why it is happening ;P
+    key = key.map{|x| if x.to_s =~ URI::regexp
+        CGI.parse(URI.parse(x.to_s).query)['v']
+      end}
+      
+      key = key.map{|x| x[0] if !x.nil?}
+
+      session["sets"].store(name.to_s, {"name" => name.to_s, "vidnums" => key, "links" => links})
+      @error = 3
+
+      if key.include?(nil) or name == ""
+        @error = 1
+        session["sets"].delete(name)
+      end
+
+  erb :index
 end
-
-
-##not the RESTful new page with the form we want, but a parameters way to make a new video set
-get '/sets/new/:setname/:videonumber' do |setname, videonumber|
-  #setname = "pharrell"
-  #videonumber = "y6Sxv-sUYtM"
-  session[setname] = [videonumber]
-  "Video " + videonumber + "is now the only video in setname " + setname
-end
-
-get '/sets/add/:setname/:videonumber' do |setname, videonumber|
-  session[setname] << videonumber
-  "Video " + videonumber + "has been added to set " + setname
-end
-
-
-##Play the Pharrell video set - not necessary eventually, just for testing
-get '/sets/pharrell' do
-  @videonumber = randomvideo(session["pharrell"])
-  #@videonumber = "y6Sxv-sUYtM"
-  erb :play
-end
-
-
 
 #Session page for troubleshooting the session
 get '/session' do
@@ -93,18 +96,66 @@ get '/session' do
   session.inspect
 end
 
-
-##example of sinatra input by url parameters
-##The ?var=1&var2=2&var3=3 style works too, but Sinatra can give us prettier url parameters
-get '/params/:idlol' do
-  params.inspect
+#display a a list of all the sets possible!
+get '/sets' do
+  erb :list
 end
 
-get '/favorite/:fruit' do |fruit|
-  "My favorite fruit is the " + fruit.to_s
-  #params["fruit"] also works instead of fruit
+#delete from session the set of name :name. This really just redirects us to a form where we confirm
+get '/sets/:name/destroy' do |name|
+  @name = name
+  erb:destroy
 end
 
-get '/add/:num1/:num2' do |num1, num2|
-  ##your code here, as an example
+#actually destroy the set
+delete '/sets/:name' do |name|
+  session["sets"].delete(name.to_s)
+  @error = 4
+  erb:index
+end
+
+#pull up the form with which we actually edit the set
+get '/sets/:name/edit' do |name|
+  @name = name
+  erb:edit
+end
+
+#after submitting the form. Really just overwriting the velues under key in session. 
+put '/sets/:name' do |name|
+  
+  links = []
+  key=[]
+  
+  #if there are more than one element in the links box, split them and append to links
+   if !params[:linkz].match(/\r\n/).nil?
+    links = params[:linkz].split("\r\n")
+    key = links
+   else 
+  #otherwise just add this one element to links
+    links = [params[:linkz]]
+    key = links
+   end
+    #parsing the links. I don't really know what exactly is happening, but I know why it is happening ;P
+    key = key.map{|x| if x.to_s =~ URI::regexp
+        CGI.parse(URI.parse(x.to_s).query)['v']
+      end}
+      
+      key = key.map{|x| x[0] if !x.nil?}
+
+      session["sets"].store(name.to_s, {"name" => name.to_s, "vidnums" => key, "links" => links})
+      @error = 5
+
+      if key.include?(nil) or name == ""
+        @error = 1
+        session["sets"].delete(name)
+      end
+
+  erb :index
+end
+
+
+#play a random video from a set with name :name
+get '/sets/:name' do |name|
+  @videonumber = randomvideo(session["sets"][name.to_s]["vidnums"])
+  erb :play
 end
